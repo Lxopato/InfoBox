@@ -72,7 +72,9 @@
         },
         methods: {
           generateInfobox(){
-              this.$http.get('http://localhost:8000/entity?id='+ this.id + '&lang=' + this.lang + '&strategy=' + this.strat).
+              this.$http.get('http://localhost:8000/entity?id='+ this.id + '&lang=' + this.lang + '&strategy=' + this.strat, {
+                  credentials: false,
+              }).
               then(function (response){
                   if(response.data.length !== 0){
                       this.alerts = [];
