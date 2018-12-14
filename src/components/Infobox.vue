@@ -1,25 +1,38 @@
 <template>
-    <div>
+    <div v-if="entity_label">
         <img v-bind:src="this.entity_image" align="center" class="image-container">
-        <table align="center" class="table table-bordered table-striped" style="margin-top: 25px;max-width: 500px">
-            <col>
-            <col>
-            <thead>
-            <th></th>
-            <th class="infobox-header">{{this.entity_label}}</th>
+        <div class="table_infobox">
+            <table align="center" class="table table-bordered table-striped" style="margin-top: 25px;max-width: 500px" >
+                <col>
+                <col>
+                <thead>
+                <th></th>
+                <th class="infobox-header">{{this.entity_label}}</th>
+                <br>
+                </thead>
+                <tbody>
+                <tr v-if="entity_description">
+                    <th>Description:</th>
+                    <td>{{this.entity_description}}</td>
+                </tr>
+                <tr v-for="data in info_box">
+                    <th> {{data.label}}</th>
+                    <td>{{data.values}}</td>
+                </tr>
+                </tbody>
+            </table>
+        </div>
+
+        <div class="infobox_source_code">
             <br>
-            </thead>
-            <tbody>
-            <tr v-if="entity_description">
-                <th>Description:</th>
-                <td>{{this.entity_description}}</td>
-            </tr>
-            <tr v-for="data in info_box">
-                <th> {{data.label}}</th>
-                <td>{{data.values}}</td>
-            </tr>
-            </tbody>
-        </table>
+            Wikipedia's Infobox Source Code
+            <br>
+            <br>
+            <textarea rows="50" cols="80" readonly>
+                {{infobox_source_code}}
+            </textarea>
+        </div>
+
     </div>
 </template>
 
@@ -64,7 +77,13 @@
                     {
                       name: "Value"
                     }
-                ]
+                ],
+                infobox_name: {
+                    'en': 'Infobox',
+                    'es': 'Ficha',
+                    'it': 'Infobox',
+                    'fr': 'Infobox'
+                }
             }
         },
         computed: {
@@ -89,6 +108,7 @@
 
                       this.info_box = _.sortBy(this.group_properties(response.data.properties), 'prop_id');
                       this.response = response
+                      this.infobox_source_code = this.generate_source_code(response.data.properties)
 
                   }
               }, function (err) {
@@ -110,7 +130,36 @@
                     }
                 }
                 return _.values(mapping);
+                },
+            generate_source_code: function (prop) {
+                var mapping = {};
+                var text = `\n{{${this.infobox_name[this.lang]}\n`;
+                for(var i = 0; i<= prop.length -1; i++){
+                    if (prop[i].prop.value in mapping) {
+                        mapping[prop[i].prop.value].values += (', ' + this.check_entity(prop[i].val.type ,prop[i].valLabel.value));
+                    }
+                    else {
+                        mapping[prop[i].prop.value] = {
+                            "label" : '|'+prop[i].pLabel.value+ ' = ',
+                            "values" : this.check_entity(prop[i].val.type ,prop[i].valLabel.value),
+                            "index" : i
+                        };
+                    }
                 }
+                for(var k in mapping){
+                    text += mapping[k].label + mapping[k].values + '\n';
+                }
+                text += '}}';
+                return text
+            },
+            check_entity: function (val_type, valLabel) {
+                if (val_type === "uri"){
+                    return "[[ " + valLabel + " ]]"
+                }
+                else if (val_type === "literal"){
+                    return valLabel
+                }
+            }
           }
         }
 
@@ -148,5 +197,14 @@
 
     tr:nth-child(even) {
         background-color: #dddddd;
+    }
+    .table_infobox {
+        width: 50%;
+        float: left;
+    }
+
+    .infobox_source_code{
+        width: 50%;
+        float: right;
     }
 </style>
