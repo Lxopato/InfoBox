@@ -75,10 +75,10 @@
 
 
                 ],
-                strategy: 'baseline',
+                strategy: 'sum',
                 strategies: [
                     {val: "baseline"},
-                    {val: "frecuency"},
+                    {val: "frequency"},
                     {val: "pagerank"},
                     {val: "multiplicative"},
                     {val: "sum"}
@@ -113,7 +113,7 @@
                         if (!this.items.length) this.noData = true;
 
                     })
-            }
+            },
         },
     }
 </script>
