@@ -154,8 +154,9 @@
             },
             check_image: function (image) {
                 if (image){
-                    var img_name = image.split('/').slice(-1)[0];
-                    return `|image = [[File:${img_name}|200px]]\n`;
+                    let file = image.split('/').slice(-1)[0];
+                    let img_name = file.replace('%20', " ").replace(".jpg", '');
+                    return `|image = [[File:${file}|200px|alt={{${img_name}}}]]\n`;
                 }
                 return ''
             }
