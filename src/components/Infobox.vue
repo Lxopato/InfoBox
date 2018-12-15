@@ -133,32 +133,31 @@
                 },
             generate_source_code: function (prop) {
                 var mapping = {};
-                var text = `\n{{${this.infobox_name[this.lang]}\n`;
+                var image = this.check_image(this.entity_image);
+                var text = `\n{{${this.infobox_name[this.lang]}\n|name = {{subst:PAGENAME}}\n|title = {{subst:PAGENAME}} \n|subheader = ${this.entity_description}\n${image}`;
                 for(var i = 0; i<= prop.length -1; i++){
-                    if (prop[i].prop.value in mapping) {
-                        mapping[prop[i].prop.value].values += (', ' + this.check_entity(prop[i].val.type ,prop[i].valLabel.value));
-                    }
-                    else {
+                    if (!(prop[i].prop.value in mapping) && (prop[i].prop.value !== "http://www.wikidata.org/prop/direct/P31")) {
                         mapping[prop[i].prop.value] = {
-                            "label" : '|'+prop[i].pLabel.value+ ' = ',
-                            "values" : this.check_entity(prop[i].val.type ,prop[i].valLabel.value),
+                            "label" : prop[i].pLabel.value,
+                            "id" : prop[i].prop.value.split('/').slice(-1)[0],
                             "index" : i
                         };
                     }
                 }
+                var count= 1;
                 for(var k in mapping){
-                    text += mapping[k].label + mapping[k].values + '\n';
+                    text += `|label${count} = ${mapping[k].label}\n|data${count} = {{#invoke:Wikidata|getValue|${mapping[k].id}|FETCH_WIKIDATA}} \n`;
+                    count ++;
                 }
                 text += '}}';
                 return text
             },
-            check_entity: function (val_type, valLabel) {
-                if (val_type === "uri"){
-                    return "[[ " + valLabel + " ]]"
+            check_image: function (image) {
+                if (image){
+                    var img_name = image.split('/').slice(-1)[0];
+                    return `|image = [[File:${img_name}|200px]]\n`;
                 }
-                else if (val_type === "literal"){
-                    return valLabel
-                }
+                return ''
             }
           }
         }
