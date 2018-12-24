@@ -1,25 +1,38 @@
 <template>
-    <div>
+    <div v-if="entity_label">
         <img v-bind:src="this.entity_image" align="center" class="image-container">
-        <table align="center" class="table table-bordered table-striped" style="margin-top: 25px;max-width: 500px">
-            <col>
-            <col>
-            <thead>
-            <th></th>
-            <th class="infobox-header">{{this.entity_label}}</th>
+        <div class="table_infobox">
+            <table align="center" class="table table-bordered table-striped" style="margin-top: 25px;max-width: 500px" >
+                <col>
+                <col>
+                <thead>
+                <th></th>
+                <th class="infobox-header">{{this.entity_label}}</th>
+                <br>
+                </thead>
+                <tbody>
+                <tr v-if="entity_description">
+                    <th>Description:</th>
+                    <td>{{this.entity_description}}</td>
+                </tr>
+                <tr v-for="data in info_box">
+                    <th> {{data.label}}</th>
+                    <td>{{data.values}}</td>
+                </tr>
+                </tbody>
+            </table>
+        </div>
+
+        <div class="infobox_source_code">
             <br>
-            </thead>
-            <tbody>
-            <tr v-if="entity_description">
-                <th>Description:</th>
-                <td>{{this.entity_description}}</td>
-            </tr>
-            <tr v-for="data in info_box">
-                <th> {{data.label}}</th>
-                <td>{{data.values}}</td>
-            </tr>
-            </tbody>
-        </table>
+            Wikipedia's Infobox Source Code
+            <br>
+            <br>
+            <textarea rows="50" cols="80" readonly>
+                {{infobox_source_code}}
+            </textarea>
+        </div>
+
     </div>
 </template>
 
@@ -64,7 +77,13 @@
                     {
                       name: "Value"
                     }
-                ]
+                ],
+                infobox_name: {
+                    'en': 'Infobox',
+                    'es': 'Ficha',
+                    'it': 'Infobox',
+                    'fr': 'Infobox'
+                }
             }
         },
         computed: {
@@ -89,6 +108,7 @@
 
                       this.info_box = _.sortBy(this.group_properties(response.data.properties), 'prop_id');
                       this.response = response
+                      this.infobox_source_code = this.generate_source_code(response.data.properties)
 
                   }
               }, function (err) {
@@ -110,7 +130,36 @@
                     }
                 }
                 return _.values(mapping);
+                },
+            generate_source_code: function (prop) {
+                var mapping = {};
+                var image = this.check_image(this.entity_image);
+                var text = `\n{{${this.infobox_name[this.lang]}\n|name = {{subst:PAGENAME}}\n|title = {{subst:PAGENAME}} \n|subheader = ${this.entity_description}\n${image}`;
+                for(var i = 0; i<= prop.length -1; i++){
+                    if (!(prop[i].prop.value in mapping) && (prop[i].prop.value !== "http://www.wikidata.org/prop/direct/P31")) {
+                        mapping[prop[i].prop.value] = {
+                            "label" : prop[i].pLabel.value,
+                            "id" : prop[i].prop.value.split('/').slice(-1)[0],
+                            "index" : i
+                        };
+                    }
                 }
+                var count= 1;
+                for(var k in mapping){
+                    text += `|label${count} = ${mapping[k].label}\n|data${count} = {{#invoke:Wikidata|getValue|${mapping[k].id}|FETCH_WIKIDATA}} \n`;
+                    count ++;
+                }
+                text += '}}';
+                return text
+            },
+            check_image: function (image) {
+                if (image){
+                    let file = image.split('/').slice(-1)[0];
+                    let img_name = file.replace('%20', " ").replace(".jpg", '');
+                    return `|image = [[File:${file}|200px|alt={{${img_name}}}]]\n`;
+                }
+                return ''
+            }
           }
         }
 
@@ -148,5 +197,14 @@
 
     tr:nth-child(even) {
         background-color: #dddddd;
+    }
+    .table_infobox {
+        width: 50%;
+        float: left;
+    }
+
+    .infobox_source_code{
+        width: 50%;
+        float: right;
     }
 </style>
