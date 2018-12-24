@@ -18,7 +18,7 @@
                 </option>
             </select>
             <br/>
-            <button v-on:click="refhresh_infobox" type="button">Refresh Infobox</button>
+            <button v-on:click="refresh_infobox" type="button">Refresh Infobox</button>
         </form>
         <br/>
     </div>
@@ -123,7 +123,7 @@
 
                     })
             },
-            refhresh_infobox: function () {
+            refresh_infobox: function () {
                 console.log(this.language);
                 console.log(this.strategy);
                 if(this.selected){
