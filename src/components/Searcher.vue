@@ -17,6 +17,8 @@
                     {{strategy.val}}
                 </option>
             </select>
+            <br/>
+            <button v-on:click="refhresh_infobox" type="button">Refresh Infobox</button>
         </form>
         <br/>
     </div>
@@ -47,7 +49,7 @@
         <br>
         <br>
         </div>
-        <div v-if="selected">
+        <div v-if="show">
             <Infobox
                     :lang= "language"
                     :strat= "strategy"
@@ -87,7 +89,13 @@
                 items: [],
                 timeoutId: null,
                 noData: false,
+                lel: null,
             }
+        },
+        computed: {
+          show: function(){
+              return (this.selected !== null) && (this.lel !== null);
+          }
         },
         methods: {
             onSearch: function (search) {
@@ -110,10 +118,19 @@
                     })
                     .then(response => {
                         this.items = response.body.search;
+                        this.lel = true;
                         if (!this.items.length) this.noData = true;
 
                     })
             },
+            refhresh_infobox: function () {
+                console.log(this.language);
+                console.log(this.strategy);
+                if(this.selected){
+                    this.lel = null;
+                    this.onSearch(this.selected)
+                }
+            }
         },
     }
 </script>
