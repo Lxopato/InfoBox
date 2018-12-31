@@ -73,7 +73,6 @@
                     {text: 'English', value: 'en' },
                     {text: 'Español', value: 'es' },
                     {text: 'Italiano', value: 'it' },
-                    {text: 'Frances', value: 'fr' },
 
 
                 ],
