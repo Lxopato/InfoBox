@@ -123,8 +123,6 @@
                     })
             },
             refresh_infobox: function () {
-                console.log(this.language);
-                console.log(this.strategy);
                 if(this.selected){
                     this.lel = null;
                     this.onSearch(this.selected)
