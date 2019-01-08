@@ -78,11 +78,34 @@
                       name: "Value"
                     }
                 ],
-                infobox_name: {
-                    'en': 'Infobox',
-                    'es': 'Ficha',
-                    'it': 'Infobox',
-                    'fr': 'Infobox'
+                infobox_features: {
+                    'en': {
+                        infobox: 'Infobox',
+                        name: 'name',
+                        title: 'title',
+                        image: 'image',
+                        subheader: 'subheader',
+                        label: 'label',
+                        data: 'data'
+                    },
+                    'es': {
+                        infobox:'Ficha',
+                        name: 'nombre',
+                        title: 'titulo',
+                        image: 'imagen',
+                        subheader: 'subtitulo',
+                        label: 'etiqueta',
+                        data: 'datos',
+                    },
+                    'it': {
+                        infobox: 'Infobox',
+                        name: 'NomeTemplate',
+                        title: 'TitoloInt',
+                        image: 'Immagine',
+                        subheader: 'SottoTitolo',
+                        label: 'Nome',
+                        data: 'Valore',
+                    },
                 }
             }
         },
@@ -134,7 +157,7 @@
             generate_source_code: function (prop) {
                 var mapping = {};
                 var image = this.check_image(this.entity_image);
-                var text = `\n{{${this.infobox_name[this.lang]}\n|name = {{subst:PAGENAME}}\n|title = {{subst:PAGENAME}} \n|subheader = ${this.entity_description}\n${image}`;
+                var text = `\n{{${this.infobox_features[this.lang].infobox}\n|${this.infobox_features[this.lang].name} = {{subst:PAGENAME}}\n|${this.infobox_features[this.lang].title} = {{subst:PAGENAME}} \n|${this.infobox_features[this.lang].subheader} = ${this.entity_description}\n${image}`;
                 for(var i = 0; i<= prop.length -1; i++){
                     if (!(prop[i].prop.value in mapping) && (prop[i].prop.value !== "http://www.wikidata.org/prop/direct/P31")) {
                         mapping[prop[i].prop.value] = {
@@ -146,7 +169,7 @@
                 }
                 var count= 1;
                 for(var k in mapping){
-                    text += `|label${count} = ${mapping[k].label}\n|data${count} = {{#invoke:Wikidata|getValue|${mapping[k].id}|FETCH_WIKIDATA}} \n`;
+                    text += `|${this.infobox_features[this.lang].label}${count} = ${mapping[k].label}\n|${this.infobox_features[this.lang].data}${count} = {{#invoke:Wikidata|getValue|${mapping[k].id}|FETCH_WIKIDATA}} \n`;
                     count ++;
                 }
                 text += '}}';
@@ -156,7 +179,7 @@
                 if (image){
                     let file = image.split('/').slice(-1)[0];
                     let img_name = file.replace('%20', " ").replace(".jpg", '');
-                    return `|image = [[File:${file}|200px|alt={{${img_name}}}]]\n`;
+                    return `|${this.infobox_features[this.lang].image} = [[File:${file}|200px|alt={{${img_name}}}]]\n`;
                 }
                 return ''
             }
