@@ -64,7 +64,7 @@
             Paper: <a href="http://wikiworkshop.org/2018/papers/wikiworkshop2018_paper_17.pdf">Automatically Generating Wikipedia Info-boxes from Wikidata</a>
             <br>
             <br>
-            Website created by: <a href="https://github.com/Lxopato">Luis Patricio Bustos</a>.
+            Website created by: <a href="https://github.com/Lxopato">Luis Patricio Bustos</a>, <a href="https://github.com/tsaezb">Tomás Sáez</a> .
             <br>
             Source Code: <a href="https://github.com/Lxopato/InfoBox">Frontend</a>, <a href="https://github.com/Lxopato/infobox-api">Backend</a>
             <br>
